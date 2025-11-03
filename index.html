@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Square Words</title>
+    <style>
+        .filter-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+        #filter {
+            flex: 1;
+            max-width: 500px;
+            padding: 8px;
+            font-size: 16px;
+        }
+        #iFilter {
+            width: 60px;
+            padding: 8px;
+            font-size: 16px;
+        }
+        #count {
+            margin-bottom: 10px;
+            color: #666;
+        }
+        #words-container {
+            position: relative;
+            height: calc(100vh - 160px);
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            background: white;
+        }
+        .word-pair {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            position: absolute;
+            left: 0;
+            right: 0;
+        }
+        .w1-prefix { color: #0066cc; }
+        .w1-suffix { color: #cc6600; }
+        .w2-prefix { color: #0066cc; }
+        .w2-suffix { color: #cc6600; }
+        .loading { padding: 20px; }
+        p { margin: 0; font-family: monospace; }
+        .box { padding: 10px; border: 1px solid #eee; }
+    </style>
+</head>
+<body>
+    <h1>Square Words</h1>
+    <div class="filter-container">
+        <input type="text" id="filter" placeholder="Regex filter" autocomplete="off">
+        <input type="number" id="iFilter" placeholder="length" autocomplete="off" min="2" max="3">
+    </div>
+    <div id="count"></div>
+    <div id="words-container">
+        <div class="loading">Loading...</div>
+    </div>
+
+    <script>
+        let allPairs = [];
+        let filteredPairs = [];
+        let debounceTimer = null;
+        
+        // Virtual scrolling parameters
+        const ITEM_HEIGHT = 62; // Height of each word-pair element
+        const BUFFER = 5; // Extra items to render above/below viewport
+        
+        async function loadWords() {
+            try {
+                const response = await fetch('square_pairs.json');
+                const data = await response.json();
+                allPairs = data;
+                filteredPairs = allPairs;
+                renderVirtual();
+            } catch (error) {
+                document.getElementById('words-container').innerHTML = 
+                    '<div class="loading">Error loading words: ' + error.message + '</div>';
+            }
+        }
+        
+        function renderVirtual() {
+            const container = document.getElementById('words-container');
+            const count = document.getElementById('count');
+            const pairs = filteredPairs;
+            
+            count.textContent = `Showing ${pairs.length.toLocaleString()} word pairs`;
+            
+            if (pairs.length === 0) {
+                container.innerHTML = '<div class="loading">No matches found</div>';
+                return;
+            }
+            
+            // Set container height to accommodate all items
+            const totalHeight = pairs.length * ITEM_HEIGHT;
+            container.innerHTML = `<div style="height: ${totalHeight}px; position: relative;"></div>`;
+            const wrapper = container.firstChild;
+            
+            // Scroll handler for virtual scrolling
+            let ticking = false;
+            container.addEventListener('scroll', () => {
+                if (!ticking) {
+                    window.requestAnimationFrame(() => {
+                        updateVisibleItems(wrapper, pairs);
+                        ticking = false;
+                    });
+                    ticking = true;
+                }
+            });
+            
+            // Initial render
+            updateVisibleItems(wrapper, pairs);
+        }
+        
+        function updateVisibleItems(wrapper, pairs) {
+            const container = document.getElementById('words-container');
+            const scrollTop = container.scrollTop;
+            const containerHeight = container.clientHeight;
+            
+            // Calculate visible range
+            const startIndex = Math.max(0, Math.floor(scrollTop / ITEM_HEIGHT) - BUFFER);
+            const endIndex = Math.min(
+                pairs.length,
+                Math.ceil((scrollTop + containerHeight) / ITEM_HEIGHT) + BUFFER
+            );
+            
+            // Create fragment with visible items
+            const fragment = document.createDocumentFragment();
+            
+            for (let i = startIndex; i < endIndex; i++) {
+                const [w1, w2, splitIdx] = pairs[i];
+                const prefix1 = w1.substring(0, splitIdx);
+                const suffix1 = w1.substring(splitIdx);
+                const prefix2 = w2.substring(0, splitIdx);
+                const suffix2 = w2.substring(splitIdx);
+                
+                const div = document.createElement('div');
+                div.className = 'word-pair';
+                div.style.top = `${i * ITEM_HEIGHT}px`;
+                div.innerHTML = `
+                    <p><span class="w1-prefix">${prefix1}</span><span class="w1-suffix">${suffix1}</span></p>
+                    <p><span class="w2-prefix">${prefix2}</span><span class="w2-suffix">${suffix2}</span></p>
+                `;
+                fragment.appendChild(div);
+            }
+            
+            // Replace all children at once
+            wrapper.textContent = '';
+            wrapper.appendChild(fragment);
+        }
+        
+        function filterWords(searchTerm, iValue) {
+            const term = searchTerm.toLowerCase();
+            const i = iValue ? parseInt(iValue) : null;
+            
+            let regex = null;
+            if (term) {
+                try {
+                    regex = new RegExp(term, 'i');
+                } catch (e) {
+                    // Invalid regex, fall back to literal string matching
+                    regex = null;
+                }
+            }
+            
+            filteredPairs = allPairs.filter(([w1, w2, splitIdx]) => {
+                let matchesTerm = true;
+                if (regex) {
+                    matchesTerm = regex.test(w1) || regex.test(w2);
+                } else if (term) {
+                    matchesTerm = w1.includes(term) || w2.includes(term);
+                }
+                const matchesI = i === null || splitIdx === i;
+                return matchesTerm && matchesI;
+            });
+            
+            renderVirtual();
+        }
+        
+        // Debounced input handler
+        document.getElementById('filter').addEventListener('input', (e) => {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                const iValue = document.getElementById('iFilter').value;
+                filterWords(e.target.value, iValue);
+            }, 150);
+        });
+        
+        document.getElementById('iFilter').addEventListener('input', (e) => {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                const searchTerm = document.getElementById('filter').value;
+                filterWords(searchTerm, e.target.value);
+            }, 150);
+        });
+        
+        loadWords();
+    </script>
+</body>
+</html>
