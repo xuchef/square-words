@@ -22,34 +22,27 @@ i  | 0 1|2 3 4 5
 
 ---
 
-First, I used the MacOS dictionary to get a list of 4-6 letter lowercase words
+First, I used the MacOS dictionary to get a list of lowercase words of length >= 4
 
 ```bash
-awk '/^[a-z]{4,6}$/' /usr/share/dict/words > words.txt
+awk '/.{4,}/ { print tolower($0) }' /usr/share/dict/words | uniq > words.txt
 ```
 
-Then, I brute-forced all "square" pairs using
+Then, I found all "square" pairs using
 
 ```bash
-python brute.py
+python square_pairs.py
 ```
 
-This outputs a list of "square" pairs in `square_pairs.json`
+This outputs a list of "square" pairs in `square_pairs.json.gz`. Uncompressed, it looks like
 
 ```
 [
-  ["abac", "acacin", 2],
+  ["aani", "styles", 2],
   ["abac", "acajou", 2],
   ["abac", "acana", 2],
   ...
 ]
-```
-
-You could probably do this smarter with tries but our word bank was small enough that this only took 10 mins on my laptop
-
-```bash
-$ wc -l words.txt
-   27939 words.txt
 ```
 
 For exploring these square pairs, `proc.py` is a good starting point.

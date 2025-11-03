@@ -53,7 +53,7 @@
     <h1>Square Words</h1>
     <div class="filter-container">
         <input type="text" id="filter" placeholder="Regex filter" autocomplete="off">
-        <input type="number" id="iFilter" placeholder="length" autocomplete="off" min="2" max="3">
+        <input type="number" id="iFilter" placeholder="length" autocomplete="off">
     </div>
     <div id="count"></div>
     <div id="words-container">
@@ -71,8 +71,17 @@
         
         async function loadWords() {
             try {
-                const response = await fetch('square_pairs.json');
-                const data = await response.json();
+                const response = await fetch('square_pairs.json.gz');
+                const arrayBuffer = await response.arrayBuffer();
+                
+                // Decompress gzip data
+                const decompressedStream = new DecompressionStream('gzip');
+                const blob = new Blob([arrayBuffer]);
+                const stream = blob.stream().pipeThrough(decompressedStream);
+                const decompressedBlob = await new Response(stream).blob();
+                const text = await decompressedBlob.text();
+                
+                const data = JSON.parse(text);
                 allPairs = data;
                 filteredPairs = allPairs;
                 renderVirtual();
