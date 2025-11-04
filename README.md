@@ -14,10 +14,14 @@ For example, ("best", "styles", 2):
 
 ![Square Words Example](square_words_example.svg)
 
+This quick project was inspired by a recent trip to Amsterdam where I stumbled upon this storefront.
+
 [
 ![Best Styles Zaandam](best_styles.png)
 📍 Best Styles Zaandam, Netherlands
 ](https://maps.app.goo.gl/M9aW4FrkTYkj9KKq9)
+
+I'm not sure if there's a proper name for this word pattern so I've coined the term _square words_. If you've seen this somewhere else, please let me know!
 
 ---
 
