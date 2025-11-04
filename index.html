@@ -4,7 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Square Words</title>
+    <link rel="icon" type="image/svg+xml" href="logo.svg">
     <style>
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
         .filter-container {
             display: flex;
             gap: 10px;
@@ -13,7 +20,6 @@
         }
         #filter {
             flex: 1;
-            max-width: 500px;
             padding: 8px;
             font-size: 16px;
         }
@@ -40,20 +46,27 @@
             left: 0;
             right: 0;
         }
-        .w1-prefix { color: #0066cc; }
-        .w1-suffix { color: #cc6600; }
-        .w2-prefix { color: #0066cc; }
-        .w2-suffix { color: #cc6600; }
+        .w1-prefix { color: #009689; }
+        .w1-suffix { color: #E17100; }
+        .w2-prefix { color: #E17100; }
+        .w2-suffix { color: #155DFC; }
         .loading { padding: 20px; }
         p { margin: 0; font-family: monospace; }
-        .box { padding: 10px; border: 1px solid #eee; }
+        .title { margin: 0; }
+        body { max-width: 400px; margin: 0 auto; }
     </style>
 </head>
 <body>
-    <h1>Square Words</h1>
+    <div class="header">
+        <img height="60px" src="logo.svg" alt="Square Words" class="logo">
+        <div>
+            <h1 class="title">Square Words</h1>
+            <a href="https://github.com/xuchef/square-words" target="_blank">github.com/xuchef/square-words</a>
+        </div>
+    </div>
     <div class="filter-container">
-        <input type="text" id="filter" placeholder="Regex filter" autocomplete="off">
-        <input type="number" id="iFilter" placeholder="length" autocomplete="off">
+        <input type="text" id="filter" placeholder="regex filter" autocomplete="off">
+        <input type="number" id="iFilter" placeholder="prefix" autocomplete="off">
     </div>
     <div id="count"></div>
     <div id="words-container">
@@ -96,7 +109,7 @@
             const count = document.getElementById('count');
             const pairs = filteredPairs;
             
-            count.textContent = `Showing ${pairs.length.toLocaleString()} word pairs`;
+            count.textContent = `Showing ${pairs.length.toLocaleString()} square word pairs`;
             
             if (pairs.length === 0) {
                 container.innerHTML = '<div class="loading">No matches found</div>';
