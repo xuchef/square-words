@@ -12,13 +12,7 @@ To denote one such _square pair_, we'll use the tuple $(w_1, w_2, i)$.
 
 For example, ("best", "styles", 2) is a _square pair_.
 
-```
-w1 | b e|s t
-————————————————
-w2 | s t|y l e s
-————————————————
-i  | 0 1|2 3 4 5
-```
+![Square Pair Example](square_pair_example.svg)
 
 [
 ![Best Styles Zaandam](best_styles.png)
