@@ -25,10 +25,10 @@ I'm not sure if there's a proper name for this word pattern so I've coined the t
 
 ---
 
-First, I used the MacOS dictionary to get a list of lowercase words of length >= 4
+First, I grabbed words and their frequencies from [Google Books Ngram Viewer](https://books.google.com/ngrams).
 
 ```bash
-awk '/.{4,}/ { print tolower($0) }' /usr/share/dict/words | uniq > words.txt
+python proc.py
 ```
 
 Then, I found all _square words_ using
@@ -37,7 +37,7 @@ Then, I found all _square words_ using
 python square_words.py
 ```
 
-This outputs a list of _square words_ in `square_words.json.gz`. Uncompressed, it looks like
+The top 1000 _square words_ by relevance are in `square_words.json`, which looks like
 
 ```
 [
@@ -47,3 +47,5 @@ This outputs a list of _square words_ in `square_words.json.gz`. Uncompressed, i
   ...
 ]
 ```
+
+The full list of _square words_ is in `square_words.json.gz`.
