@@ -6,13 +6,13 @@ Let $w_1$ and $w_2$ be two words, both of length >= 4.
 
 Let $L = \min(\text{len}(w_1), \text{len}(w_2))$.
 
-Then, we say $w_1$ and $w_2$ are _square_ if there exists an integer $i$ where $2 \leq i \lt L-1$ and $w_1[:i] + w_2[:i] = w_1$ and $w_1[i:] + w_2[i:] = w_2$.
+Then, we say $w_1$ and $w_2$ are _square words_ if there exists an integer $i$ where $2 \leq i \lt L-1$ and $w_1[:i] + w_2[:i] = w_1$ and $w_1[i:] + w_2[i:] = w_2$.
 
-To denote one such _square pair_, we'll use the tuple $(w_1, w_2, i)$.
+To denote _square words_, we'll use the tuple $(w_1, w_2, i)$.
 
-For example, ("best", "styles", 2) is a _square pair_.
+For example, ("best", "styles", 2):
 
-![Square Pair Example](square_pair_example.svg)
+![Square Words Example](square_words_example.svg)
 
 [
 ![Best Styles Zaandam](best_styles.png)
@@ -27,13 +27,13 @@ First, I used the MacOS dictionary to get a list of lowercase words of length >=
 awk '/.{4,}/ { print tolower($0) }' /usr/share/dict/words | uniq > words.txt
 ```
 
-Then, I found all _square pairs_ using
+Then, I found all _square words_ using
 
 ```bash
-python square_pairs.py
+python square_words.py
 ```
 
-This outputs a list of _square pairs_ in `square_pairs.json.gz`. Uncompressed, it looks like
+This outputs a list of _square words_ in `square_words.json.gz`. Uncompressed, it looks like
 
 ```
 [

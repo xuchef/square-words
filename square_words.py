@@ -22,7 +22,7 @@ if __name__ == "__main__":
 
     print(f"Built index, processing...")
 
-    square_pairs = []
+    square_words = []
 
     for processed, w1 in enumerate(words):
         for i in range(2, len(w1) - 1):
@@ -31,15 +31,15 @@ if __name__ == "__main__":
                 if w1 == w2 or len(w2) <= i - 1:
                     continue
                 if w1[:i] + w2[:i] == w1 and w1[i:] + w2[i:] == w2:
-                    square_pairs.append((w1, w2, i))
+                    square_words.append((w1, w2, i))
 
         if processed % 1000 == 0:
             print(f"{processed/len(words)*100:.2f}%\r", end="")
 
-    print("matches:", len(square_pairs))
+    print("matches:", len(square_words))
     print("time:", time.time() - t, "secs")
 
     print(f"Saving to file")
 
-    with gzip.open("square_pairs.json.gz", "wt", encoding="utf-8") as f:
-        json.dump(square_pairs, f)
+    with gzip.open("square_words.json.gz", "wt", encoding="utf-8") as f:
+        json.dump(square_words, f)

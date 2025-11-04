@@ -84,7 +84,7 @@
         
         async function loadWords() {
             try {
-                const response = await fetch('square_pairs.json.gz');
+                const response = await fetch('square_words.json.gz');
                 const arrayBuffer = await response.arrayBuffer();
                 
                 // Decompress gzip data
@@ -109,7 +109,7 @@
             const count = document.getElementById('count');
             const pairs = filteredPairs;
             
-            count.textContent = `Showing ${pairs.length.toLocaleString()} square word pairs`;
+            count.textContent = `Showing ${pairs.length.toLocaleString()} square words`;
             
             if (pairs.length === 0) {
                 container.innerHTML = '<div class="loading">No matches found</div>';
